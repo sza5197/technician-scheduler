@@ -25,3 +25,12 @@ def filter_by_qualification(job, technicians):
             eligible.append(technician)
     return eligible
 
+def overlaps(start_a, end_a, start_b, end_b):
+    """
+    Return True if two time ranges clash.
+
+    Two ranges overlap only if each starts before the other ends.
+    Ranges that merely touch at an endpoint (e.g. 9-11 and 11-13)
+    do NOT overlap, because one ends exactly as the other begins.
+    """
+    return start_a < end_b and start_b < end_a
