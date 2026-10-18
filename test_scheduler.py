@@ -33,3 +33,23 @@ assert scheduler.overlaps(time(9, 0), time(10, 0), time(14, 0), time(15, 0)) == 
     "9-10 and 14-15 are far apart, should NOT clash"
 
 print("All Phase 3 tests passed")
+
+# --- Phase 4: full eligibility ---
+import copy
+techs = copy.deepcopy(data.technicians)
+for t in techs:
+    if t["name"] == "Chris":
+        t["bookings"].append({"start": time(10, 0), "end": time(12, 0)})
+
+eligible, rejected = scheduler.find_eligible_technicians(data.jobs[0], techs)
+eligible_names = [t["name"] for t in eligible]
+reasons = {r["name"]: r["reason"] for r in rejected}
+
+assert "Adam" in eligible_names, "Adam should be eligible"
+assert "Dana" in eligible_names, "Dana should be eligible"
+assert "Chris" not in eligible_names, "Chris clashes 10-12 with the 11-13 job"
+assert "unavailable" in reasons["Erin"], "Erin should be rejected as unavailable"
+assert "skill" in reasons["Ben"], "Ben should be rejected for missing skill"
+assert "booked" in reasons["Chris"], "Chris should be rejected for a booking clash"
+
+print("All Phase 4 tests passed")
