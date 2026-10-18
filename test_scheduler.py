@@ -53,3 +53,25 @@ assert "skill" in reasons["Ben"], "Ben should be rejected for missing skill"
 assert "booked" in reasons["Chris"], "Chris should be rejected for a booking clash"
 
 print("All Phase 4 tests passed")
+
+# --- Phase 5: recommendation ---
+
+# Give Adam two bookings so Dana (zero bookings) has the lighter workload.
+techs2 = copy.deepcopy(data.technicians)
+for t in techs2:
+    if t["name"] == "Adam":
+        t["bookings"].append({"start": time(9, 0), "end": time(10, 0)})
+        t["bookings"].append({"start": time(14, 0), "end": time(15, 0)})
+
+# Job 101: HVAC, 11:00-13:00. Both Adam and Dana are eligible; Dana is lighter.
+recommended, eligible, rejected = scheduler.recommend_technician(data.jobs[0], techs2)
+assert recommended["name"] == "Dana", f"Dana has fewer jobs, got {recommended['name']}"
+
+# No-eligible case: a job needing a skill nobody available has.
+impossible_job = {"id": 999, "job_type": "Gas fitting", "required_skill": "GasFitting",
+                  "suburb": "Tarneit", "start": time(11, 0), "end": time(12, 0)}
+rec2, elig2, rej2 = scheduler.recommend_technician(impossible_job, data.technicians)
+assert rec2 is None, "Nobody has GasFitting, recommendation should be None"
+assert len(elig2) == 0, "No one should be eligible for the impossible job"
+
+print("All Phase 5 tests passed")
