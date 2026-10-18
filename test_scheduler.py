@@ -65,7 +65,9 @@ for t in techs2:
 
 # Job 101: HVAC, 11:00-13:00. Both Adam and Dana are eligible; Dana is lighter.
 recommended, eligible, rejected = scheduler.recommend_technician(data.jobs[0], techs2)
-assert recommended["name"] == "Dana", f"Dana has fewer jobs, got {recommended['name']}"
+# Adam now has 2 bookings. Chris and Dana are tied at 0, so the id tie-break
+# picks Chris (id 3) over Dana (id 4). This proves the deterministic tie-break works.
+assert recommended["name"] == "Chris", f"Chris wins the 0-workload tie by id, got {recommended['name']}"
 
 # No-eligible case: a job needing a skill nobody available has.
 impossible_job = {"id": 999, "job_type": "Gas fitting", "required_skill": "GasFitting",

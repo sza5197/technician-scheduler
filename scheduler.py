@@ -65,3 +65,45 @@ def find_eligible_technicians(job, technicians):
         eligible.append(technician)
 
     return eligible, rejected
+
+def workload(technician):
+    """Count how many bookings a technician already has. Fewer = preferred."""
+    return len(technician["bookings"])
+
+
+def recommend_technician(job, technicians):
+    """
+    Decide who SHOULD take the job, among those who CAN.
+
+    Returns (recommended, eligible, rejected):
+      recommended -> the chosen technician dict, or None if nobody is eligible
+      eligible    -> all technicians who passed the hard constraints
+      rejected    -> {"name", "reason"} for those who failed
+    """
+    eligible, rejected = find_eligible_technicians(job, technicians)
+
+    if not eligible:
+        return None, eligible, rejected
+
+    # Sort by workload (fewest first), then by id as a predictable tie-breaker.
+    eligible_sorted = sorted(eligible, key=lambda t: (workload(t), t["id"]))
+    recommended = eligible_sorted[0]
+    return recommended, eligible_sorted, rejected
+
+
+def build_explanation(job, recommended, eligible, rejected):
+    """Build a plain-English explanation that reflects the real checks."""
+    lines = []
+
+    if recommended is None:
+        lines.append(f"No technician can take '{job['job_type']}' "
+                     f"({job['start'].strftime('%H:%M')}-{job['end'].strftime('%H:%M')}).")
+    else:
+        lines.append(f"{recommended['name']} is recommended: has the required "
+                     f"{job['required_skill']} skill, is available for the full booking, "
+                     f"and has the lightest workload ({workload(recommended)} existing jobs).")
+
+    for r in rejected:
+        lines.append(f"{r['name']} was not eligible — {r['reason']}.")
+
+    return "\n".join(lines)
