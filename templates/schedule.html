@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule — P3 Scheduler</title>
+</head>
+<body>
+    <h1>P3 Scheduler</h1>
+    <p><a href="/create-job">+ Create New Job</a></p>
+    <h2>Technicians</h2>
+
+    <table border="1" cellpadding="6">
+        <tr>
+            <th>Name</th>
+            <th>Skills</th>
+            <th>Working hours</th>
+            <th>Area</th>
+            <th>Available</th>
+            <th>Current bookings</th>
+        </tr>
+
+        {% for tech in technicians %}
+        <tr>
+            <td>{{ tech.name }}</td>
+            <td>{{ tech.skills | join(", ") }}</td>
+            <td>{{ tech.shift_start.strftime("%H:%M") }} – {{ tech.shift_end.strftime("%H:%M") }}</td>
+            <td>{{ tech.service_area }}</td>
+            <td>{% if tech.available %}Yes{% else %}No{% endif %}</td>
+            <td>
+                {% if tech.bookings %}
+                    {% for b in tech.bookings %}
+                        {{ b.start.strftime("%H:%M") }}–{{ b.end.strftime("%H:%M") }}<br>
+                    {% endfor %}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Job — P3 Scheduler</title>
+</head>
+<body>
+    <h1>Create New Job</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <p>
+            Job type:<br>
+            <input type="text" name="job_type" required>
+        </p>
+        <p>
+            Required skill:<br>
+            <input type="text" name="required_skill" required>
+        </p>
+        <p>
+            Suburb:<br>
+            <input type="text" name="suburb">
+        </p>
+        <p>
+            Start time (HH:MM, 24-hour):<br>
+            <input type="text" name="start_time" placeholder="11:00" required>
+        </p>
+        <p>
+            Duration (hours):<br>
+            <input type="text" name="duration" placeholder="2" required>
+        </p>
+        <button type="submit">Create Job</button>
+    </form>
+
+    <p><a href="/">← Back to schedule</a></p>
+</body>
+</html>
