@@ -2,12 +2,16 @@
 <html>
 <head>
     <title>Jobs — P3 Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Jobs</h1>
-    <p><a href="/">← Back to schedule</a> | <a href="/create-job">+ Create New Job</a></p>
+    <div class="nav">
+        <a href="/">← Back to schedule</a>
+        <a href="/create-job">+ Create New Job</a>
+    </div>
 
-    <table border="1" cellpadding="6">
+    <table>
         <tr>
             <th>Job</th>
             <th>Required skill</th>
@@ -21,7 +25,7 @@
             <td>{{ job.required_skill }}</td>
             <td>{{ job.suburb }}</td>
             <td>{{ job.start.strftime("%H:%M") }}–{{ job.end.strftime("%H:%M") }}</td>
-            <td><a href="/recommend/{{ job.id }}">Find technician</a></td>
+            <td><a class="btn" href="/recommend/{{ job.id }}">Find technician</a></td>
         </tr>
         {% endfor %}
     </table>

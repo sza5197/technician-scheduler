@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Schedule — P3 Scheduler</title>
+    <title>Schedule — Job Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>P3 Scheduler</h1>
-        <p><a href="/create-job">+ Create New Job</a> | <a href="/jobs">View Jobs</a></p>
-    <h2>Technicians</h2>
+    <div class="nav">
+        <a href="/create-job">+ Create New Job</a>
+        <a href="/jobs">View Jobs</a>
+    </div>
 
-    <table border="1" cellpadding="6">
+    <h2>Technicians</h2>
+    <table>
         <tr>
             <th>Name</th>
             <th>Skills</th>
@@ -17,14 +21,19 @@
             <th>Available</th>
             <th>Current bookings</th>
         </tr>
-
         {% for tech in technicians %}
         <tr>
             <td>{{ tech.name }}</td>
             <td>{{ tech.skills | join(", ") }}</td>
             <td>{{ tech.shift_start.strftime("%H:%M") }} – {{ tech.shift_end.strftime("%H:%M") }}</td>
             <td>{{ tech.service_area }}</td>
-            <td>{% if tech.available %}Yes{% else %}No{% endif %}</td>
+            <td>
+                {% if tech.available %}
+                    <span class="good">Yes</span>
+                {% else %}
+                    <span class="bad">No</span>
+                {% endif %}
+            </td>
             <td>
                 {% if tech.bookings %}
                     {% for b in tech.bookings %}

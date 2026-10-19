@@ -1,0 +1,92 @@
+/* P3 Scheduler — simple, clean styling. */
+
+body {
+    font-family: system-ui, Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+    color: #1a1a1a;
+    background: #f7f7f8;
+    line-height: 1.5;
+}
+
+h1 {
+    font-size: 1.6rem;
+    border-bottom: 2px solid #2b6cb0;
+    padding-bottom: 8px;
+}
+
+h2 { font-size: 1.25rem; margin-top: 24px; }
+
+/* Top navigation links */
+.nav {
+    margin: 16px 0;
+    font-size: 0.95rem;
+}
+.nav a {
+    color: #2b6cb0;
+    text-decoration: none;
+    margin-right: 12px;
+}
+.nav a:hover { text-decoration: underline; }
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-top: 12px;
+}
+th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e2e2;
+}
+th {
+    background: #2b6cb0;
+    color: white;
+    font-weight: 600;
+}
+tr:last-child td { border-bottom: none; }
+
+/* Forms */
+form p { margin: 12px 0; }
+input[type="text"] {
+    width: 100%;
+    max-width: 320px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+label, form p { font-weight: 500; }
+
+/* Buttons and links-as-buttons */
+button, .btn {
+    background: #2b6cb0;
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+button:hover, .btn:hover { background: #245a94; }
+
+/* Status colours */
+.good { color: #1a7f37; font-weight: 600; }
+.bad  { color: #c0392b; font-weight: 600; }
+
+/* Explanation box */
+pre {
+    background: white;
+    border: 1px solid #e2e2e2;
+    border-left: 4px solid #2b6cb0;
+    padding: 14px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    font-family: ui-monospace, monospace;
+}

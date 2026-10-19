@@ -2,12 +2,17 @@
 <html>
 <head>
     <title>Create Job — P3 Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Create New Job</h1>
+    <div class="nav">
+        <a href="/">← Back to schedule</a>
+        <a href="/jobs">View Jobs</a>
+    </div>
 
     {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <p class="bad">{{ error }}</p>
     {% endif %}
 
     <form method="POST">
@@ -33,7 +38,5 @@
         </p>
         <button type="submit">Create Job</button>
     </form>
-
-    <p><a href="/">← Back to schedule</a></p>
 </body>
 </html>

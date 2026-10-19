@@ -2,10 +2,14 @@
 <html>
 <head>
     <title>Recommendation — P3 Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Recommendation</h1>
-    <p><a href="/jobs">← Back to jobs</a></p>
+    <div class="nav">
+        <a href="/jobs">← Back to jobs</a>
+        <a href="/">Schedule</a>
+    </div>
 
     <h2>Job: {{ job.job_type }}</h2>
     <p>
@@ -15,13 +19,13 @@
     </p>
 
     {% if recommended %}
-        <h3 style="color: green;">Recommended: {{ recommended.name }}</h3>
+        <h3 class="good">Recommended: {{ recommended.name }}</h3>
         <form method="POST">
             <input type="hidden" name="technician_id" value="{{ recommended.id }}">
             <button type="submit">Confirm assignment</button>
         </form>
     {% else %}
-        <h3 style="color: red;">No technician can take this job.</h3>
+        <h3 class="bad">No technician can take this job.</h3>
     {% endif %}
 
     <h3>Explanation</h3>
