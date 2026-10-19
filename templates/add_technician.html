@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Technician — P3 Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Add Technician</h1>
+    <div class="nav">
+        <a href="/">← Back to schedule</a>
+        <a href="/technicians">View Technicians</a>
+    </div>
+
+    {% if error %}
+        <p class="bad">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <p>
+            Name:<br>
+            <input type="text" name="name" required>
+        </p>
+        <p>
+            Skills (comma-separated):<br>
+            <input type="text" name="skills" placeholder="HVAC, Electrical" required>
+        </p>
+        <p>
+            Shift start (HH:MM):<br>
+            <input type="text" name="shift_start" placeholder="09:00" required>
+        </p>
+        <p>
+            Shift end (HH:MM):<br>
+            <input type="text" name="shift_end" placeholder="17:00" required>
+        </p>
+        <p>
+            Service area:<br>
+            <input type="text" name="service_area">
+        </p>
+        <p>
+            <label>
+                <input type="checkbox" name="available" checked>
+                Available
+            </label>
+        </p>
+        <button type="submit">Add Technician</button>
+    </form>
+</body>
+</html>

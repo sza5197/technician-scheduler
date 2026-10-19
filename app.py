@@ -94,5 +94,39 @@ def recommend(job_id):
                            recommended=recommended, explanation=explanation)
 
 
+@app.route("/add-technician", methods=["GET", "POST"])
+def add_technician():
+    """Show the add-technician form (GET) and save a new technician (POST)."""
+    if request.method == "POST":
+        name = request.form["name"]
+        skills_text = request.form["skills"]
+        start_text = request.form["shift_start"]
+        end_text = request.form["shift_end"]
+        service_area = request.form["service_area"]
+        # A checkbox is present in the form data only when ticked.
+        available = "available" in request.form
+
+        # Validate the times.
+        try:
+            shift_start = datetime.strptime(start_text, "%H:%M").time()
+            shift_end = datetime.strptime(end_text, "%H:%M").time()
+            if shift_start >= shift_end:
+                raise ValueError("Shift start must be before shift end.")
+        except ValueError:
+            return render_template(
+                "add_technician.html",
+                error="Please enter valid times (HH:MM), with start before end.",
+            )
+
+        # Turn "HVAC, Electrical" into ["HVAC", "Electrical"], trimming spaces.
+        skills = [s.strip() for s in skills_text.split(",") if s.strip()]
+
+        database.save_technician(name, skills, shift_start, shift_end,
+                                 service_area, available)
+        return redirect("/")
+
+    return render_template("add_technician.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
