@@ -5,6 +5,7 @@ Sub-step 1: create the technicians and skills tables.
 
 import sqlite3
 from datetime import datetime
+import scheduler
 
 
 DB_NAME = "scheduler.db"   # the database file that will appear in your folder
@@ -42,6 +43,29 @@ def create_tables():
         )
     """)
 
+    # Jobs the manager creates.
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS jobs (
+            id              INTEGER PRIMARY KEY,
+            job_type        TEXT NOT NULL,
+            required_skill  TEXT NOT NULL,
+            suburb          TEXT,
+            start_time      TEXT NOT NULL,
+            end_time        TEXT NOT NULL
+        )
+    """)
+
+    # Confirmed bookings: links a job to the technician doing it.
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS assignments (
+            id             INTEGER PRIMARY KEY,
+            job_id         INTEGER NOT NULL,
+            technician_id  INTEGER NOT NULL,
+            FOREIGN KEY (job_id) REFERENCES jobs(id),
+            FOREIGN KEY (technician_id) REFERENCES technicians(id)
+        )
+    """)
+    
     connection.commit()   # save the changes
     connection.close()    # close the connection
     print("Tables created (or already exist).")
@@ -131,6 +155,154 @@ def load_technicians():
 
     connection.close()
     return technicians
+
+
+def save_job(job):
+    """Insert a job into the jobs table. Returns the new job's id."""
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        INSERT INTO jobs (job_type, required_skill, suburb, start_time, end_time)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        job["job_type"],
+        job["required_skill"],
+        job["suburb"],
+        job["start"].strftime("%H:%M"),
+        job["end"].strftime("%H:%M"),
+    ))
+    connection.commit()
+    new_id = cursor.lastrowid
+    connection.close()
+    return new_id
+
+
+def load_technicians_with_bookings():
+    """
+    Load technicians (with skills), AND fill each one's bookings list
+    from the assignments table, so conflict checks see saved bookings.
+    """
+    technicians = load_technicians()   # reuse what we built in sub-step 3
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    for tech in technicians:
+        # Find every job assigned to this technician, with that job's times.
+        cursor.execute("""
+            SELECT jobs.start_time, jobs.end_time
+            FROM assignments
+            JOIN jobs ON jobs.id = assignments.job_id
+            WHERE assignments.technician_id = ?
+        """, (tech["id"],))
+        for start_text, end_text in cursor.fetchall():
+            tech["bookings"].append({
+                "start": text_to_time(start_text),
+                "end": text_to_time(end_text),
+            })
+
+    connection.close()
+    return technicians
+
+
+def confirm_assignment(job, technician_id):
+    """
+    Save a booking ONLY if the technician is still eligible right now.
+    Returns True if saved, False if the technician is no longer valid.
+    """
+    # Re-check eligibility against the CURRENT saved bookings.
+    technicians = load_technicians_with_bookings()
+    eligible, rejected = scheduler.find_eligible_technicians(job, technicians)
+    eligible_ids = [t["id"] for t in eligible]
+
+    if technician_id not in eligible_ids:
+        return False   # someone/something changed — refuse to save an invalid booking
+
+    # Still valid -> save the assignment.
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO assignments (job_id, technician_id) VALUES (?, ?)",
+        (job["id"], technician_id),
+    )
+    connection.commit()
+    connection.close()
+    return True
+
+import scheduler   # we reuse the eligibility check at confirm time
+
+
+def save_job(job):
+    """Insert a job into the jobs table. Returns the new job's id."""
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        INSERT INTO jobs (job_type, required_skill, suburb, start_time, end_time)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        job["job_type"],
+        job["required_skill"],
+        job["suburb"],
+        job["start"].strftime("%H:%M"),
+        job["end"].strftime("%H:%M"),
+    ))
+    connection.commit()
+    new_id = cursor.lastrowid
+    connection.close()
+    return new_id
+
+
+def load_technicians_with_bookings():
+    """
+    Load technicians (with skills), AND fill each one's bookings list
+    from the assignments table, so conflict checks see saved bookings.
+    """
+    technicians = load_technicians()   # reuse what we built in sub-step 3
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    for tech in technicians:
+        # Find every job assigned to this technician, with that job's times.
+        cursor.execute("""
+            SELECT jobs.start_time, jobs.end_time
+            FROM assignments
+            JOIN jobs ON jobs.id = assignments.job_id
+            WHERE assignments.technician_id = ?
+        """, (tech["id"],))
+        for start_text, end_text in cursor.fetchall():
+            tech["bookings"].append({
+                "start": text_to_time(start_text),
+                "end": text_to_time(end_text),
+            })
+
+    connection.close()
+    return technicians
+
+
+def confirm_assignment(job, technician_id):
+    """
+    Save a booking ONLY if the technician is still eligible right now.
+    Returns True if saved, False if the technician is no longer valid.
+    """
+    # Re-check eligibility against the CURRENT saved bookings.
+    technicians = load_technicians_with_bookings()
+    eligible, rejected = scheduler.find_eligible_technicians(job, technicians)
+    eligible_ids = [t["id"] for t in eligible]
+
+    if technician_id not in eligible_ids:
+        return False   # someone/something changed — refuse to save an invalid booking
+
+    # Still valid -> save the assignment.
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO assignments (job_id, technician_id) VALUES (?, ?)",
+        (job["id"], technician_id),
+    )
+    connection.commit()
+    connection.close()
+    return True
 
 if __name__ == "__main__":
     create_tables()
