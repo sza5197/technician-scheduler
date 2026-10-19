@@ -350,6 +350,82 @@ def load_job(job_id):
     }
 
 
+def save_technician(name, skills, shift_start, shift_end, service_area, available):
+    """
+    Add a new technician and their skills to the database.
+    `skills` is a list of skill strings. Times are time objects.
+    Returns the new technician's id.
+    """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    # 1. Insert the person.
+    cursor.execute("""
+        INSERT INTO technicians (name, shift_start, shift_end, service_area, available)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        name,
+        shift_start.strftime("%H:%M"),
+        shift_end.strftime("%H:%M"),
+        service_area,
+        1 if available else 0,
+    ))
+    new_id = cursor.lastrowid
+
+    # 2. Insert each skill as its own row, linked to this technician.
+    for skill in skills:
+        cursor.execute(
+            "INSERT INTO skills (technician_id, skill) VALUES (?, ?)",
+            (new_id, skill),
+        )
+
+    connection.commit()
+    connection.close()
+    return new_id
+
+def update_technician(tech_id, name, skills, shift_start, shift_end, service_area, available):
+    """
+    Update an existing technician's details and REPLACE their skills.
+    Skills are replaced wholesale: delete the old rows, insert the new set.
+    """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    # 1. Update the person's details.
+    cursor.execute("""
+        UPDATE technicians
+        SET name = ?, shift_start = ?, shift_end = ?, service_area = ?, available = ?
+        WHERE id = ?
+    """, (
+        name,
+        shift_start.strftime("%H:%M"),
+        shift_end.strftime("%H:%M"),
+        service_area,
+        1 if available else 0,
+        tech_id,
+    ))
+
+    # 2. Replace their skills: remove all old ones, then add the current set.
+    cursor.execute("DELETE FROM skills WHERE technician_id = ?", (tech_id,))
+    for skill in skills:
+        cursor.execute(
+            "INSERT INTO skills (technician_id, skill) VALUES (?, ?)",
+            (tech_id, skill),
+        )
+
+    connection.commit()
+    connection.close()
+
+
+def load_technician(tech_id):
+    """Load one technician (with skills) by id, for the edit form. Returns dict or None."""
+    technicians = load_technicians()   # reuse sub-step 3's loader
+    for tech in technicians:
+        if tech["id"] == tech_id:
+            return tech
+    return None
+
+
 if __name__ == "__main__":
     create_tables()
     seed_technicians()

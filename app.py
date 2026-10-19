@@ -127,6 +127,44 @@ def add_technician():
 
     return render_template("add_technician.html")
 
+@app.route("/technicians")
+def technicians():
+    """List all technicians with edit links."""
+    all_techs = database.load_technicians()
+    return render_template("technicians.html", technicians=all_techs)
+
+
+@app.route("/edit-technician/<int:tech_id>", methods=["GET", "POST"])
+def edit_technician(tech_id):
+    """Show the edit form (GET) and save changes (POST)."""
+    tech = database.load_technician(tech_id)
+    if tech is None:
+        return "Technician not found.", 404
+
+    if request.method == "POST":
+        name = request.form["name"]
+        skills_text = request.form["skills"]
+        start_text = request.form["shift_start"]
+        end_text = request.form["shift_end"]
+        service_area = request.form["service_area"]
+        available = "available" in request.form
+
+        try:
+            shift_start = datetime.strptime(start_text, "%H:%M").time()
+            shift_end = datetime.strptime(end_text, "%H:%M").time()
+            if shift_start >= shift_end:
+                raise ValueError("Shift start must be before shift end.")
+        except ValueError:
+            return render_template("edit_technician.html", tech=tech,
+                                   error="Please enter valid times (HH:MM), start before end.")
+
+        skills = [s.strip() for s in skills_text.split(",") if s.strip()]
+        database.update_technician(tech_id, name, skills, shift_start, shift_end,
+                                   service_area, available)
+        return redirect("/technicians")
+
+    return render_template("edit_technician.html", tech=tech)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

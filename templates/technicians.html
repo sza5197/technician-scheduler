@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Technicians — P3 Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Technicians</h1>
+    <div class="nav">
+        <a href="/">← Back to schedule</a>
+        <a href="/add-technician">+ Add Technician</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Skills</th>
+            <th>Hours</th>
+            <th>Area</th>
+            <th>Available</th>
+            <th>Action</th>
+        </tr>
+        {% for tech in technicians %}
+        <tr>
+            <td>{{ tech.name }}</td>
+            <td>{{ tech.skills | join(", ") }}</td>
+            <td>{{ tech.shift_start.strftime("%H:%M") }}–{{ tech.shift_end.strftime("%H:%M") }}</td>
+            <td>{{ tech.service_area }}</td>
+            <td>
+                {% if tech.available %}<span class="good">Yes</span>
+                {% else %}<span class="bad">No</span>{% endif %}
+            </td>
+            <td><a class="btn" href="/edit-technician/{{ tech.id }}">Edit</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

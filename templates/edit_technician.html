@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Technician — P3 Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Edit Technician</h1>
+    <div class="nav">
+        <a href="/technicians">← Back to technicians</a>
+    </div>
+
+    {% if error %}
+        <p class="bad">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <p>
+            Name:<br>
+            <input type="text" name="name" value="{{ tech.name }}" required>
+        </p>
+        <p>
+            Skills (comma-separated):<br>
+            <input type="text" name="skills" value="{{ tech.skills | join(', ') }}" required>
+        </p>
+        <p>
+            Shift start (HH:MM):<br>
+            <input type="text" name="shift_start" value="{{ tech.shift_start.strftime('%H:%M') }}" required>
+        </p>
+        <p>
+            Shift end (HH:MM):<br>
+            <input type="text" name="shift_end" value="{{ tech.shift_end.strftime('%H:%M') }}" required>
+        </p>
+        <p>
+            Service area:<br>
+            <input type="text" name="service_area" value="{{ tech.service_area }}">
+        </p>
+        <p>
+            <label>
+                <input type="checkbox" name="available" {% if tech.available %}checked{% endif %}>
+                Available
+            </label>
+        </p>
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>
