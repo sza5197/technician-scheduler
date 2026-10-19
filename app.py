@@ -56,6 +56,11 @@ def create_job():
     # GET request: just show the empty form.
     return render_template("create_job.html")
 
+@app.route("/jobs")
+def jobs():
+    """List all created jobs, each linking to its recommendation."""
+    all_jobs = database.load_jobs()
+    return render_template("jobs.html", jobs=all_jobs)
 
 if __name__ == "__main__":
     app.run(debug=True)

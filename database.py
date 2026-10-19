@@ -304,6 +304,28 @@ def confirm_assignment(job, technician_id):
     connection.close()
     return True
 
+def load_jobs():
+    """Read all jobs from the database as dictionaries the scheduler can use."""
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT id, job_type, required_skill, suburb, start_time, end_time
+        FROM jobs
+    """)
+    jobs = []
+    for row in cursor.fetchall():
+        job_id, job_type, required_skill, suburb, start_text, end_text = row
+        jobs.append({
+            "id": job_id,
+            "job_type": job_type,
+            "required_skill": required_skill,
+            "suburb": suburb,
+            "start": text_to_time(start_text),
+            "end": text_to_time(end_text),
+        })
+    connection.close()
+    return jobs
+
 if __name__ == "__main__":
     create_tables()
     seed_technicians()

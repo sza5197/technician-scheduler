@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jobs — P3 Scheduler</title>
+</head>
+<body>
+    <h1>Jobs</h1>
+    <p><a href="/">← Back to schedule</a> | <a href="/create-job">+ Create New Job</a></p>
+
+    <table border="1" cellpadding="6">
+        <tr>
+            <th>Job</th>
+            <th>Required skill</th>
+            <th>Suburb</th>
+            <th>Time</th>
+            <th>Action</th>
+        </tr>
+        {% for job in jobs %}
+        <tr>
+            <td>{{ job.job_type }}</td>
+            <td>{{ job.required_skill }}</td>
+            <td>{{ job.suburb }}</td>
+            <td>{{ job.start.strftime("%H:%M") }}–{{ job.end.strftime("%H:%M") }}</td>
+            <td><a href="/recommend/{{ job.id }}">Find technician</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
