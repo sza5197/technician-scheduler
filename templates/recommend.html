@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recommendation — P3 Scheduler</title>
+</head>
+<body>
+    <h1>Recommendation</h1>
+    <p><a href="/jobs">← Back to jobs</a></p>
+
+    <h2>Job: {{ job.job_type }}</h2>
+    <p>
+        Needs <strong>{{ job.required_skill }}</strong> ·
+        {{ job.start.strftime("%H:%M") }}–{{ job.end.strftime("%H:%M") }} ·
+        {{ job.suburb }}
+    </p>
+
+    {% if recommended %}
+        <h3 style="color: green;">Recommended: {{ recommended.name }}</h3>
+        <form method="POST">
+            <input type="hidden" name="technician_id" value="{{ recommended.id }}">
+            <button type="submit">Confirm assignment</button>
+        </form>
+    {% else %}
+        <h3 style="color: red;">No technician can take this job.</h3>
+    {% endif %}
+
+    <h3>Explanation</h3>
+    <pre>{{ explanation }}</pre>
+</body>
+</html>

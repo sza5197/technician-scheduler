@@ -326,6 +326,30 @@ def load_jobs():
     connection.close()
     return jobs
 
+
+def load_job(job_id):
+    """Load one job by its id. Returns the job dict, or None if not found."""
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT id, job_type, required_skill, suburb, start_time, end_time
+        FROM jobs WHERE id = ?
+    """, (job_id,))
+    row = cursor.fetchone()
+    connection.close()
+    if row is None:
+        return None
+    job_id, job_type, required_skill, suburb, start_text, end_text = row
+    return {
+        "id": job_id,
+        "job_type": job_type,
+        "required_skill": required_skill,
+        "suburb": suburb,
+        "start": text_to_time(start_text),
+        "end": text_to_time(end_text),
+    }
+
+
 if __name__ == "__main__":
     create_tables()
     seed_technicians()

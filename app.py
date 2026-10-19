@@ -1,7 +1,7 @@
-
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
 import database
+import scheduler
 
 app = Flask(__name__)
 
@@ -56,11 +56,43 @@ def create_job():
     # GET request: just show the empty form.
     return render_template("create_job.html")
 
+
 @app.route("/jobs")
 def jobs():
     """List all created jobs, each linking to its recommendation."""
     all_jobs = database.load_jobs()
     return render_template("jobs.html", jobs=all_jobs)
+
+
+@app.route("/recommend/<int:job_id>", methods=["GET", "POST"])
+def recommend(job_id):
+    """Run the scheduler for one job (GET); confirm the assignment (POST)."""
+    job = database.load_job(job_id)
+    if job is None:
+        return "Job not found.", 404
+
+    if request.method == "POST":
+        # Manager clicked Confirm. Re-validate and save.
+        technician_id = int(request.form["technician_id"])
+        saved = database.confirm_assignment(job, technician_id)
+        if not saved:
+            # The tech is no longer valid (e.g. a conflict appeared). Re-run and explain.
+            technicians = database.load_technicians_with_bookings()
+            recommended, eligible, rejected = scheduler.recommend_technician(job, technicians)
+            explanation = ("That technician is no longer available (a conflicting booking "
+                           "exists). Here is the current recommendation:\n\n"
+                           + scheduler.build_explanation(job, recommended, eligible, rejected))
+            return render_template("recommend.html", job=job,
+                                   recommended=recommended, explanation=explanation)
+        return redirect("/")
+
+    # GET: run the engine and show the recommendation + explanation.
+    technicians = database.load_technicians_with_bookings()
+    recommended, eligible, rejected = scheduler.recommend_technician(job, technicians)
+    explanation = scheduler.build_explanation(job, recommended, eligible, rejected)
+    return render_template("recommend.html", job=job,
+                           recommended=recommended, explanation=explanation)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
