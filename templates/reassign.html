@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reassign — P3 Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Reassign Job</h1>
+    <div class="nav">
+        <a href="/affected">← Back to reassignments</a>
+        <a href="/">Schedule</a>
+    </div>
+
+    <h2>Job: {{ job.job_type }}</h2>
+    <p>
+        Needs <strong>{{ job.required_skill }}</strong> ·
+        {{ job.start.strftime("%H:%M") }}–{{ job.end.strftime("%H:%M") }} ·
+        {{ job.suburb }}
+    </p>
+
+    {% if recommended %}
+        <h3 class="good">New recommendation: {{ recommended.name }}</h3>
+        <form method="POST">
+            <input type="hidden" name="technician_id" value="{{ recommended.id }}">
+            <button type="submit">Confirm reassignment</button>
+        </form>
+    {% else %}
+        <h3 class="bad">No other technician can take this job.</h3>
+    {% endif %}
+
+    <h3>Explanation</h3>
+    <pre>{{ explanation }}</pre>
+</body>
+</html>

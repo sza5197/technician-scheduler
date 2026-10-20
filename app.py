@@ -166,5 +166,42 @@ def edit_technician(tech_id):
     return render_template("edit_technician.html", tech=tech)
 
 
+@app.route("/affected")
+def affected():
+    """Show jobs assigned to technicians who are now unavailable."""
+    items = database.load_affected_assignments()
+    return render_template("affected.html", affected=items)
+
+
+@app.route("/reassign/<int:job_id>", methods=["GET", "POST"])
+def reassign(job_id):
+    """Find a new technician for an affected job (GET) and reassign it (POST)."""
+    job = database.load_job(job_id)
+    if job is None:
+        return "Job not found.", 404
+
+    if request.method == "POST":
+        technician_id = int(request.form["technician_id"])
+        # Remove the old (now-invalid) assignment FIRST, then save the new one.
+        database.delete_assignment_for_job(job_id)
+        saved = database.confirm_assignment(job, technician_id)
+        if not saved:
+            # New tech no longer valid — re-run and explain.
+            technicians = database.load_technicians_with_bookings()
+            recommended, eligible, rejected = scheduler.recommend_technician(job, technicians)
+            explanation = ("That technician is no longer available. Current situation:\n\n"
+                           + scheduler.build_explanation(job, recommended, eligible, rejected))
+            return render_template("reassign.html", job=job,
+                                   recommended=recommended, explanation=explanation)
+        return redirect("/affected")
+
+    # GET: recommend a new technician (the unavailable one is excluded automatically).
+    technicians = database.load_technicians_with_bookings()
+    recommended, eligible, rejected = scheduler.recommend_technician(job, technicians)
+    explanation = scheduler.build_explanation(job, recommended, eligible, rejected)
+    return render_template("reassign.html", job=job,
+                           recommended=recommended, explanation=explanation)
+
+
 if __name__ == "__main__":
     app.run(debug=True)

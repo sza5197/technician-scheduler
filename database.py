@@ -426,6 +426,53 @@ def load_technician(tech_id):
     return None
 
 
+def load_affected_assignments():
+    """
+    Find confirmed assignments whose technician is now unavailable.
+    Returns a list of dicts with the job and the unavailable technician's name.
+    """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    # Join assignments -> jobs and -> technicians, keep only unavailable techs.
+    cursor.execute("""
+        SELECT jobs.id, jobs.job_type, jobs.required_skill, jobs.suburb,
+               jobs.start_time, jobs.end_time,
+               technicians.name
+        FROM assignments
+        JOIN jobs        ON jobs.id = assignments.job_id
+        JOIN technicians ON technicians.id = assignments.technician_id
+        WHERE technicians.available = 0
+    """)
+
+    affected = []
+    for row in cursor.fetchall():
+        job_id, job_type, required_skill, suburb, start_text, end_text, tech_name = row
+        affected.append({
+            "job": {
+                "id": job_id,
+                "job_type": job_type,
+                "required_skill": required_skill,
+                "suburb": suburb,
+                "start": text_to_time(start_text),
+                "end": text_to_time(end_text),
+            },
+            "unavailable_tech": tech_name,
+        })
+
+    connection.close()
+    return affected
+
+
+def delete_assignment_for_job(job_id):
+    """Remove any existing assignment for a job (used before reassigning)."""
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM assignments WHERE job_id = ?", (job_id,))
+    connection.commit()
+    connection.close()
+
+
 if __name__ == "__main__":
     create_tables()
     seed_technicians()
