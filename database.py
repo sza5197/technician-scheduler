@@ -1,11 +1,13 @@
 """
-P3 Scheduling System — database setup (SQLite).
-Sub-step 1: create the technicians and skills tables.
+P3 Scheduling System — database layer (SQLite).
+Creates the tables, seeds the starting technicians, and provides all the
+read/write queries the web app and scheduler use.
 """
 
 import sqlite3
 from datetime import datetime
 import scheduler
+import data   # our seed technicians
 
 
 DB_NAME = "scheduler.db"   # the database file that will appear in your folder
@@ -65,13 +67,10 @@ def create_tables():
             FOREIGN KEY (technician_id) REFERENCES technicians(id)
         )
     """)
-    
+
     connection.commit()   # save the changes
     connection.close()    # close the connection
     print("Tables created (or already exist).")
-
-
-import data   # our seed technicians
 
 
 def seed_technicians():
@@ -97,7 +96,7 @@ def seed_technicians():
         new_id = cursor.lastrowid
 
         # Insert each of this technician's skills as its own row,
-        # linking it back with technician_id = new_id.  <-- the foreign key in action
+        # linking it back with technician_id = new_id.
         for skill in technician["skills"]:
             cursor.execute(
                 "INSERT INTO skills (technician_id, skill) VALUES (?, ?)",
@@ -107,7 +106,6 @@ def seed_technicians():
     connection.commit()
     connection.close()
     print(f"Seeded {len(data.technicians)} technicians.")
-
 
 
 def text_to_time(text):
@@ -150,7 +148,7 @@ def load_technicians():
             "shift_end": text_to_time(shift_end),
             "service_area": service_area,
             "available": bool(available),      # 1 -> True, 0 -> False
-            "bookings": [],                    # filled from the assignments table in Sub-step 4
+            "bookings": [],                    # filled from the assignments table below
         })
 
     connection.close()
@@ -182,7 +180,7 @@ def load_technicians_with_bookings():
     Load technicians (with skills), AND fill each one's bookings list
     from the assignments table, so conflict checks see saved bookings.
     """
-    technicians = load_technicians()   # reuse what we built in sub-step 3
+    technicians = load_technicians()   # reuse the loader above
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -216,7 +214,7 @@ def confirm_assignment(job, technician_id):
     eligible_ids = [t["id"] for t in eligible]
 
     if technician_id not in eligible_ids:
-        return False   # someone/something changed — refuse to save an invalid booking
+        return False   # something changed — refuse to save an invalid booking
 
     # Still valid -> save the assignment.
     connection = get_connection()
@@ -229,80 +227,6 @@ def confirm_assignment(job, technician_id):
     connection.close()
     return True
 
-import scheduler   # we reuse the eligibility check at confirm time
-
-
-def save_job(job):
-    """Insert a job into the jobs table. Returns the new job's id."""
-    connection = get_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-        INSERT INTO jobs (job_type, required_skill, suburb, start_time, end_time)
-        VALUES (?, ?, ?, ?, ?)
-    """, (
-        job["job_type"],
-        job["required_skill"],
-        job["suburb"],
-        job["start"].strftime("%H:%M"),
-        job["end"].strftime("%H:%M"),
-    ))
-    connection.commit()
-    new_id = cursor.lastrowid
-    connection.close()
-    return new_id
-
-
-def load_technicians_with_bookings():
-    """
-    Load technicians (with skills), AND fill each one's bookings list
-    from the assignments table, so conflict checks see saved bookings.
-    """
-    technicians = load_technicians()   # reuse what we built in sub-step 3
-
-    connection = get_connection()
-    cursor = connection.cursor()
-
-    for tech in technicians:
-        # Find every job assigned to this technician, with that job's times.
-        cursor.execute("""
-            SELECT jobs.start_time, jobs.end_time
-            FROM assignments
-            JOIN jobs ON jobs.id = assignments.job_id
-            WHERE assignments.technician_id = ?
-        """, (tech["id"],))
-        for start_text, end_text in cursor.fetchall():
-            tech["bookings"].append({
-                "start": text_to_time(start_text),
-                "end": text_to_time(end_text),
-            })
-
-    connection.close()
-    return technicians
-
-
-def confirm_assignment(job, technician_id):
-    """
-    Save a booking ONLY if the technician is still eligible right now.
-    Returns True if saved, False if the technician is no longer valid.
-    """
-    # Re-check eligibility against the CURRENT saved bookings.
-    technicians = load_technicians_with_bookings()
-    eligible, rejected = scheduler.find_eligible_technicians(job, technicians)
-    eligible_ids = [t["id"] for t in eligible]
-
-    if technician_id not in eligible_ids:
-        return False   # someone/something changed — refuse to save an invalid booking
-
-    # Still valid -> save the assignment.
-    connection = get_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        "INSERT INTO assignments (job_id, technician_id) VALUES (?, ?)",
-        (job["id"], technician_id),
-    )
-    connection.commit()
-    connection.close()
-    return True
 
 def load_jobs():
     """Read all jobs from the database as dictionaries the scheduler can use."""
@@ -383,6 +307,7 @@ def save_technician(name, skills, shift_start, shift_end, service_area, availabl
     connection.close()
     return new_id
 
+
 def update_technician(tech_id, name, skills, shift_start, shift_end, service_area, available):
     """
     Update an existing technician's details and REPLACE their skills.
@@ -419,7 +344,7 @@ def update_technician(tech_id, name, skills, shift_start, shift_end, service_are
 
 def load_technician(tech_id):
     """Load one technician (with skills) by id, for the edit form. Returns dict or None."""
-    technicians = load_technicians()   # reuse sub-step 3's loader
+    technicians = load_technicians()   # reuse the loader above
     for tech in technicians:
         if tech["id"] == tech_id:
             return tech
@@ -473,6 +398,18 @@ def delete_assignment_for_job(job_id):
     connection.close()
 
 
-if __name__ == "__main__":
+def init_db():
+    """Create tables if missing, and seed technicians only if the table is empty.
+    Safe to run on every startup — it won't duplicate data."""
     create_tables()
-    seed_technicians()
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM technicians")
+    count = cursor.fetchone()[0]
+    connection.close()
+    if count == 0:
+        seed_technicians()
+
+
+if __name__ == "__main__":
+    init_db()

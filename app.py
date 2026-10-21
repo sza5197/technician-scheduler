@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect
 from datetime import datetime, timedelta
+import os
 import database
 import scheduler
 
 app = Flask(__name__)
-
+database.init_db()
 
 @app.route("/")
 def schedule():
@@ -204,4 +205,5 @@ def reassign(job_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.environ.get("FLASK_DEBUG") == "1"
+    app.run(debug=debug_mode)
