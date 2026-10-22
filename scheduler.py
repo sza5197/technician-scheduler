@@ -25,7 +25,6 @@ def overlaps(start_a, end_a, start_b, end_b):
 def find_eligible_technicians(job, technicians):
     """
     Check all hard constraints for each technician.
-    Returns (eligible, rejected):
       eligible -> technicians who pass every constraint
       rejected -> {"name", "reason"} for each technician who fails
     """
@@ -65,6 +64,7 @@ def find_eligible_technicians(job, technicians):
         eligible.append(technician)
 
     return eligible, rejected
+
 
 def workload(technician):
     """Count how many bookings a technician already has. Fewer = preferred."""
