@@ -25,27 +25,35 @@ Each technician is checked against 4 hard rules; they must pass all to be eligib
 4) No Clash - The job doesent overlap a booking they already have.
 
 Amonst those who pass, it ranks the list of available technicians by workload (to spread work fairly), if the workload remains the same, the tiebreaker is sorted by taking into the account the employee's ID (which was issued to them in chronological order). Subsequently, after recommending the employee,  it shows an explanation of why each technician was picked/rejected.
+
 Evene if no one qualifies, it says so and explains why. It also handles  one change scenario: if a technician becomes unavailable after being assigned jobs, those jobs are flagged and can be reassigned to someone else.
 
 
 TECH
 ----
-Python - scheduling logic (Standard library, sqlite3, datetime)
-Flask - web app and routes
-SQLite - storage, with a normalised schema (technicians, seperate skills table, jobs, assignments)
-HTML/CSS - plain templates, no JavaScript framework
+Python - scheduling logic (Standard library, sqlite3, datetime).
+
+Flask - web app and routes.
+
+SQLite - storage, with a normalised schema (technicians, seperate skills table, jobs, assignments).
+
+HTML/CSS - plain templates, no JavaScript framework.
 
 NO AI and no external APIs, the point is that the decisions are strict, explainable rules.
 
 Limitations
 -----------
-Single day only scheduler - times are compared wthin one day; there are no calendar dates yet as this is only a prototype.
-One skill required per job - a job needs a single qualification, not a combination, so a specialised job which requires more than one skill, cannot be created, as each job attends to a certain skill in my prototype.
-No Login.
+1) Single day only scheduler - times are compared wthin one day; there are no calendar dates yet as this is only a prototype.
+2) One skill required per job - a job needs a single qualification, not a combination, so a specialised job which requires more than one skill, cannot be created, as each job attends to a certain skill in my prototype.
+3) No Login.
 
 WHAT I WOULD ADD NEXT
 ---------------------
-Calendar dates for multi-scheduling.
-Job priority for when jobs compete for the same technician
-Service are as a tiebreaker (its sorted but not used in the decision yet)
+1) Calendar dates for multi-scheduling.
+2) Job priority for when jobs compete for the same technician
+3) Service are as a tiebreaker (its sorted but not used in the decision yet)
 
+
+LINK
+----
+https://technician-scheduler-grbp.onrender.com/
