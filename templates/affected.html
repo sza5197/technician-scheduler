@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Affected Jobs — P3 Scheduler</title>
+    <title>Reassignments — IT Help Desk</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Jobs Needing Reassignment</h1>
+    <h1>Tickets Needing Reassignment</h1>
     <div class="nav">
         <a href="/">← Back to schedule</a>
-        <a href="/technicians">Manage Technicians</a>
+        <a href="/technicians">Manage Agents</a>
     </div>
 
-    <p>These jobs are assigned to technicians who are now unavailable.</p>
+    <p>These tickets are assigned to agents who are now unavailable.</p>
 
     {% if affected %}
     <table>
         <tr>
-            <th>Job</th>
+            <th>Ticket</th>
             <th>Required skill</th>
             <th>Time</th>
             <th>Currently assigned to</th>
@@ -33,7 +33,7 @@
         {% endfor %}
     </table>
     {% else %}
-        <p class="good">No jobs need reassignment — all assigned technicians are available.</p>
+        <p class="good">No tickets need reassignment — all assigned agents are available.</p>
     {% endif %}
 </body>
 </html>

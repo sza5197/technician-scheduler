@@ -1,82 +1,83 @@
-"""P3 Scheduling System — fictional seed data""
+"""
+IT Help Desk Scheduler — seed data.
 
-These records stand in for a database (that arrives in Phase 6).
-Technicians are EXISTING company staff. Jobs are what the manager wants to assign.
+These records stand in for a database (created in the database layer).
+Support agents are EXISTING staff. Tickets are what the manager wants to assign.
 Times are real `time` objects so they compare correctly.
 """
+
 from datetime import time
 
-# --- Technicians: five existing staff members ---
-# Each is a dictionary. `skills` and `bookings` are lists.
+# --- Support agents: five existing staff members ---
 technicians = [
     {
         "id": 1,
         "name": "Adam",
-        "skills": ["HVAC"],
+        "skills": ["Network"],
         "shift_start": time(9, 0),
         "shift_end": time(17, 0),
-        "service_area": "Hoppers Crossing",
+        "service_area": "Finance",
         "available": True,
-        "bookings": [],        # no jobs assigned yet
+        "bookings": [],
     },
     {
         "id": 2,
         "name": "Ben",
-        "skills": ["Electrical"],
+        "skills": ["Accounts"],
         "shift_start": time(9, 0),
         "shift_end": time(17, 0),
-        "service_area": "Tarneit",
+        "service_area": "Sales",
         "available": True,
         "bookings": [],
     },
     {
         "id": 3,
         "name": "Chris",
-        "skills": ["HVAC", "Electrical"],
+        "skills": ["Network", "Software"],
         "shift_start": time(8, 0),
         "shift_end": time(16, 0),
-        "service_area": "Werribee",
+        "service_area": "HR",
         "available": True,
         "bookings": [],
     },
     {
         "id": 4,
         "name": "Dana",
-        "skills": ["HVAC"],
+        "skills": ["Network"],
         "shift_start": time(10, 0),
         "shift_end": time(18, 0),
-        "service_area": "Point Cook",
+        "service_area": "Operations",
         "available": True,
         "bookings": [],
     },
     {
         "id": 5,
         "name": "Erin",
-        "skills": ["Plumbing"],
+        "skills": ["Hardware"],
         "shift_start": time(9, 0),
         "shift_end": time(17, 0),
-        "service_area": "Tarneit",
+        "service_area": "Sales",
         "available": False,     # currently unavailable
         "bookings": [],
     },
 ]
 
-# --- Jobs: a couple of examples to test against ---
+# --- Tickets: a couple of examples to test against ---
 jobs = [
     {
         "id": 101,
-        "job_type": "Air-conditioner repair",
-        "required_skill": "HVAC",
-        "suburb": "Hoppers Crossing",
+        "job_type": "WiFi not connecting",
+        "required_skill": "Network",
+        "suburb": "Finance",
         "start": time(11, 0),
-        "end": time(13, 0),       # 2-hour job
+        "end": time(13, 0),       # 2-hour ticket
     },
     {
         "id": 102,
-        "job_type": "Heating repair",
-        "required_skill": "HVAC",
-        "suburb": "Werribee",
+        "job_type": "Software install request",
+        "required_skill": "Software",
+        "suburb": "HR",
         "start": time(14, 0),
-        "end": time(15, 30),      # 1.5-hour job
+        "end": time(15, 30),      # 1.5-hour ticket
     },
 ]

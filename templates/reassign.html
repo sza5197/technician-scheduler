@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reassign — P3 Scheduler</title>
+    <title>Reassign — IT Help Desk</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Reassign Job</h1>
+    <h1>Reassign Ticket</h1>
     <div class="nav">
         <a href="/affected">← Back to reassignments</a>
         <a href="/">Schedule</a>
     </div>
 
-    <h2>Job: {{ job.job_type }}</h2>
+    <h2>Ticket: {{ job.job_type }}</h2>
     <p>
         Needs <strong>{{ job.required_skill }}</strong> ·
         {{ job.start.strftime("%H:%M") }}–{{ job.end.strftime("%H:%M") }} ·
@@ -25,7 +25,7 @@
             <button type="submit">Confirm reassignment</button>
         </form>
     {% else %}
-        <h3 class="bad">No other technician can take this job.</h3>
+        <h3 class="bad">No other agent can take this ticket.</h3>
     {% endif %}
 
     <h3>Explanation</h3>

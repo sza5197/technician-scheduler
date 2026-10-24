@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Jobs — P3 Scheduler</title>
+    <title>Tickets — IT Help Desk</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Jobs</h1>
+    <h1>Tickets</h1>
     <div class="nav">
         <a href="/">← Back to schedule</a>
-        <a href="/create-job">+ Create New Job</a>
+        <a href="/create-job">+ New Ticket</a>
     </div>
 
     <table>
         <tr>
-            <th>Job</th>
+            <th>Ticket</th>
             <th>Required skill</th>
-            <th>Suburb</th>
+            <th>Department</th>
             <th>Time</th>
             <th>Action</th>
         </tr>
@@ -25,7 +25,7 @@
             <td>{{ job.required_skill }}</td>
             <td>{{ job.suburb }}</td>
             <td>{{ job.start.strftime("%H:%M") }}–{{ job.end.strftime("%H:%M") }}</td>
-            <td><a class="btn" href="/recommend/{{ job.id }}">Find technician</a></td>
+            <td><a class="btn" href="/recommend/{{ job.id }}">Find agent</a></td>
         </tr>
         {% endfor %}
     </table>

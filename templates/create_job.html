@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Create Job — P3 Scheduler</title>
+    <title>New Ticket — IT Help Desk</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Create New Job</h1>
+    <h1>Create New Ticket</h1>
     <div class="nav">
         <a href="/">← Back to schedule</a>
-        <a href="/jobs">View Jobs</a>
+        <a href="/jobs">View Tickets</a>
     </div>
 
     {% if error %}
@@ -17,16 +17,16 @@
 
     <form method="POST">
         <p>
-            Job type:<br>
-            <input type="text" name="job_type" required>
+            Issue / ticket type:<br>
+            <input type="text" name="job_type" placeholder="WiFi not connecting" required>
         </p>
         <p>
             Required skill:<br>
-            <input type="text" name="required_skill" required>
+            <input type="text" name="required_skill" placeholder="Network" required>
         </p>
         <p>
-            Suburb:<br>
-            <input type="text" name="suburb">
+            Department:<br>
+            <input type="text" name="suburb" placeholder="Finance">
         </p>
         <p>
             Start time (HH:MM, 24-hour):<br>
@@ -36,7 +36,7 @@
             Duration (hours):<br>
             <input type="text" name="duration" placeholder="2" required>
         </p>
-        <button type="submit">Create Job</button>
+        <button type="submit">Create Ticket</button>
     </form>
 </body>
 </html>

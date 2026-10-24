@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Technician — P3 Scheduler</title>
+    <title>Edit Agent — IT Help Desk</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Edit Technician</h1>
+    <h1>Edit Support Agent</h1>
     <div class="nav">
-        <a href="/technicians">← Back to technicians</a>
+        <a href="/technicians">← Back to agents</a>
     </div>
 
     {% if error %}
@@ -32,7 +32,7 @@
             <input type="text" name="shift_end" value="{{ tech.shift_end.strftime('%H:%M') }}" required>
         </p>
         <p>
-            Service area:<br>
+            Department:<br>
             <input type="text" name="service_area" value="{{ tech.service_area }}">
         </p>
         <p>

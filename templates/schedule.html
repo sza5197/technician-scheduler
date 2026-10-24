@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Schedule — Job Scheduler</title>
+    <title>Schedule — IT Help Desk</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Technician Scheduler</h1>
+    <h1>IT Help Desk Scheduler</h1>
     <div class="nav">
-        <a href="/create-job">+ Create New Job</a>
-        <a href="/jobs">View Jobs</a>
-        <a href="/add-technician">+ Add Technician</a>
-        <a href="/technicians">Manage Technicians</a>
+        <a href="/create-job">+ New Ticket</a>
+        <a href="/jobs">View Tickets</a>
+        <a href="/add-technician">+ Add Agent</a>
+        <a href="/technicians">Manage Agents</a>
         <a href="/affected">Reassignments Needed</a>
     </div>
 
-    <h2>Technicians</h2>
+    <h2>Support Agents</h2>
     <table>
         <tr>
             <th>Name</th>
             <th>Skills</th>
-            <th>Working hours</th>
-            <th>Area</th>
+            <th>Hours</th>
+            <th>Department</th>
             <th>Available</th>
-            <th>Current bookings</th>
+            <th>Current tickets</th>
         </tr>
         {% for tech in technicians %}
         <tr>
