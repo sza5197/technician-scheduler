@@ -1,14 +1,10 @@
 """
 IT Help Desk Scheduler — scheduling logic.
 Qualification, time-overlap, eligibility, and recommendation checks.
-(The logic is identical to the original; only the wording in the
-explanations has been updated to the help-desk theme.)
 """
 
-
 def has_required_skill(technician, job):
-    """Return True if the agent has the skill the ticket requires."""
-    return job["required_skill"] in technician["skills"]
+    return job["required_skill"].lower() in [s.lower() for s in technician["skills"]]
 
 
 def filter_by_qualification(job, technicians):
