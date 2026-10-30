@@ -7,10 +7,11 @@ THE PROBLEM
 Quick note: this is one company’s **INTERNAL** IT help desk, so “Department” just means which team the ticket came from (Finance, HR, Sales)
 
 
+
 On a busy help desk, deciding who handles each ticket is not obvious as some technicians may not be qualified for the job, or some may already be booked. Allocating by hand is slow and easy to get wrong.
 Given a job and the current technicians, this tool filters out everyone who can't do it and reccomends the best of who's left.
 
-This project applies not only to heating/cooling companies, but can be twisted and molded into companies of different nature; examples are below:
+This project applies not only to IT companies, but can be twisted and molded into companies of different nature; examples are below:
 1) Delivery company - Drivers could be allocated to deliveries (skills = license, vehicle type)
 2) Medical clinic - Patient appointments (skill = specialty, working hours, etc..)
 3) Trades- Carpenting/Automotive/Plumbing/electrical/AC repair. 
