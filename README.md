@@ -5,6 +5,8 @@ A small internal web tool that helps a manager assign repair jobs to the right t
 THE PROBLEM
 -----------
 Quick note: this is one company’s **INTERNAL** IT help desk, so “Department” just means which team the ticket came from (Finance, HR, Sales)
+
+
 On a busy help desk, deciding who handles each ticket is not obvious as some technicians may not be qualified for the job, or some may already be booked. Allocating by hand is slow and easy to get wrong.
 Given a job and the current technicians, this tool filters out everyone who can't do it and reccomends the best of who's left.
 
